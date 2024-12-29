@@ -19,9 +19,7 @@ build:
       context: client
       docker:
         dockerfile: Dockerfile
-        # https://skaffold.dev/docs/filesync/
       sync:
-        infer:
-          - "**/*.ts"
-          - "**/*.tsx"
-          - "**/*.css"
+        manual:
+          - dest: .
+            src: "/**/*.js"
