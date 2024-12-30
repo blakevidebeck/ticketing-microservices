@@ -17,6 +17,13 @@ spec:
                 name: auth-srv
                 port:
                   number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
           # Always list out client service at the bottom as it should try and match backend routes first
           - path: /?(.*)
             pathType: ImplementationSpecific
