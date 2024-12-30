@@ -7,6 +7,7 @@ import { createTicketRouter } from './routes/new';
 
 import { NotFoundError, currentUser, errorHandler } from '@bvidebecktickets/common';
 import { showTicketRouter } from './routes/show';
+import { showAllTicketsRouter } from './routes';
 
 const app = express();
 app.set('trust proxy', true);
@@ -18,6 +19,7 @@ app.use(currentUser);
 
 app.use(createTicketRouter);
 app.use(showTicketRouter);
+app.use(showAllTicketsRouter);
 
 app.all('*', async (req, res) => {
 	throw new NotFoundError();
