@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { Order, OrderStatus } from './Order';
 
 // An interface that describes the properties that are required to create a new ticket
 interface TicketAttrs {
@@ -12,7 +13,9 @@ interface TicketModel extends mongoose.Model<TicketDoc> {
 }
 
 // An interface that describes the properties that a ticket document has
-export interface TicketDoc extends mongoose.Document, TicketAttrs {}
+export interface TicketDoc extends mongoose.Document, TicketAttrs {
+	isReserved(): Promise<boolean>;
+}
 
 const ticketSchema = new mongoose.Schema(
 	{
@@ -37,5 +40,17 @@ const ticketSchema = new mongoose.Schema(
 );
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => new Ticket(attrs);
+ticketSchema.methods.isReserved = async function () {
+	// Run query to look at all orders. Find an order where the ticket is the ticket we just found and the orders status is not cancelled.
+	// If we find an order from this that means the ticket is reserved
+	const existingOrder = await Order.findOne({
+		ticket: this,
+		status: {
+			$in: [OrderStatus.Created, OrderStatus.AwaitingPayment, OrderStatus.Complete],
+		},
+	});
+
+	return !!existingOrder;
+};
 
 export const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);

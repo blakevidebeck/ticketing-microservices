@@ -2,6 +2,8 @@ import { OrderStatus } from '@bvidebecktickets/common';
 import mongoose from 'mongoose';
 import { TicketDoc } from './Ticket';
 
+export { OrderStatus };
+
 // An interface that describes the properties that are required to create a new order
 interface OrderAttrs {
 	userId: string;
