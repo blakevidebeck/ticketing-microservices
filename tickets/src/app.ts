@@ -3,11 +3,10 @@ import cookieSession from 'cookie-session';
 import express from 'express';
 import 'express-async-errors';
 
-import { createTicketRouter } from './routes/new';
-
 import { NotFoundError, currentUser, errorHandler } from '@bvidebecktickets/common';
-import { showTicketRouter } from './routes/show';
+import { createTicketRouter } from './routes/new';
 import { showAllTicketsRouter } from './routes';
+import { showTicketRouter } from './routes/show';
 import { updateTicketRouter } from './routes/update';
 
 const app = express();

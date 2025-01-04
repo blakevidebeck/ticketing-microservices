@@ -3,11 +3,11 @@ import cookieSession from 'cookie-session';
 import express from 'express';
 import 'express-async-errors';
 
+import { NotFoundError, errorHandler } from '@bvidebecktickets/common';
 import { currentUserRouter } from './routes/current-user';
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import { signupRouter } from './routes/signup';
-import { NotFoundError, errorHandler } from '@bvidebecktickets/common';
 
 const app = express();
 app.set('trust proxy', true);
