@@ -5,6 +5,18 @@ declare global {
 	var signin: () => string[];
 }
 
+global.console = {
+	...console,
+	// uncomment to ignore a specific log level
+	log: jest.fn(),
+	// debug: jest.fn(),
+	// info: jest.fn(),
+	// warn: jest.fn(),
+	// error: jest.fn(),
+};
+
+jest.mock('../nats-wrapper');
+
 let mongo: MongoMemoryServer | undefined;
 
 beforeAll(async () => {
@@ -17,6 +29,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+	jest.clearAllMocks();
+
 	if (mongoose.connection.db) {
 		const collections = await mongoose.connection.db.collections();
 
