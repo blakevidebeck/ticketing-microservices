@@ -3,8 +3,10 @@ import { app } from '../../app';
 
 import { Ticket } from '../../models/Ticket';
 import mongoose from 'mongoose';
+import { OrderStatus } from '@bvidebecktickets/common';
+import { Order } from '../../models/Order';
 
-it('returns an order for a particular user ', async () => {
+it('cancels a order for a user ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
 		title: 'concert',
@@ -21,21 +23,20 @@ it('returns an order for a particular user ', async () => {
 		.send({ ticketId: ticket.id })
 		.expect(201);
 
-	const res = await request(app)
-		.get(`/api/orders/${order.body.id}`)
-		.set('Cookie', user)
-		.expect(200);
+	await request(app).delete(`/api/orders/${order.body.id}`).set('Cookie', user).expect(200);
 
-	expect(res.body.id).toEqual(order.body.id);
+	const updatedOrder = await Order.findById(order.body.id);
+
+	expect(updatedOrder!.status).toEqual(OrderStatus.Cancelled);
 });
 
 it('returns an error if no order found ', async () => {
 	const orderId = new mongoose.Types.ObjectId().toHexString();
 
-	await request(app).get(`/api/orders/${orderId}`).set('Cookie', global.signin()).expect(404);
+	await request(app).delete(`/api/orders/${orderId}`).set('Cookie', global.signin()).expect(404);
 });
 
-it('returns an error if user not authorized to get ticket ', async () => {
+it('returns an error if user not authorized to delete ticket ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
 		title: 'concert',
@@ -52,5 +53,10 @@ it('returns an error if user not authorized to get ticket ', async () => {
 		.send({ ticketId: ticket.id })
 		.expect(201);
 
-	await request(app).get(`/api/orders/${order.body.id}`).set('Cookie', global.signin()).expect(401);
+	await request(app)
+		.delete(`/api/orders/${order.body.id}`)
+		.set('Cookie', global.signin())
+		.expect(401);
 });
+
+it.todo('publishes a cancel order event');
