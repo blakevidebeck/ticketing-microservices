@@ -5,6 +5,7 @@ import { Ticket } from '../../models/Ticket';
 import mongoose from 'mongoose';
 import { OrderStatus } from '@bvidebecktickets/common';
 import { Order } from '../../models/Order';
+import { natsWrapper } from '../../nats-wrapper';
 
 it('cancels a order for a user ', async () => {
 	// Create a ticket
@@ -59,4 +60,34 @@ it('returns an error if user not authorized to delete ticket ', async () => {
 		.expect(401);
 });
 
-it.todo('publishes a cancel order event');
+it('publishes a cancel order event', async () => {
+	// Create a ticket
+	const ticket = Ticket.build({
+		title: 'concert',
+		price: 20,
+	});
+	await ticket.save();
+
+	const user = global.signin();
+
+	// Create an order
+	const order = await request(app)
+		.post('/api/orders')
+		.set('Cookie', user)
+		.send({ ticketId: ticket.id })
+		.expect(201);
+
+	await request(app).delete(`/api/orders/${order.body.id}`).set('Cookie', user).expect(200);
+
+	expect(natsWrapper.client.publish).toHaveBeenCalledTimes(2);
+	expect(natsWrapper.client.publish).toHaveBeenCalledWith(
+		'order:created',
+		expect.anything(),
+		expect.anything()
+	);
+	expect(natsWrapper.client.publish).toHaveBeenCalledWith(
+		'order:cancelled',
+		expect.anything(),
+		expect.anything()
+	);
+});

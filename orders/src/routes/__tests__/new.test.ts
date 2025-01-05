@@ -4,6 +4,7 @@ import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/Order';
 import mongoose from 'mongoose';
 import { Ticket } from '../../models/Ticket';
+import { natsWrapper } from '../../nats-wrapper';
 
 it('has a route handler listening to /api/orders for post requests', async () => {
 	const res = await request(app).post('/api/orders').send({});
@@ -100,22 +101,23 @@ it('creates an order if no existing order', async () => {
 		.expect(201);
 });
 
-it.todo('publishes a create order event');
+it('publishes a create order event', async () => {
+	const ticket = Ticket.build({
+		title: 'concert',
+		price: 20,
+	});
+	await ticket.save();
 
-// it('publishes a create event', async () => {
-// 	let tickets = await Ticket.find({});
-// 	expect(tickets.length).toEqual(0);
+	await request(app)
+		.post('/api/orders')
+		.set('Cookie', global.signin())
+		.send({ ticketId: ticket.id })
+		.expect(201);
 
-// 	await request(app)
-// 		.post('/api/tickets')
-// 		.set('Cookie', global.signin())
-// 		.send({ title: 'Ticket', price: 10 })
-// 		.expect(201);
-
-// 	expect(natsWrapper.client.publish).toHaveBeenCalledTimes(1);
-// 	expect(natsWrapper.client.publish).toHaveBeenCalledWith(
-// 		'ticket:created',
-// 		expect.anything(),
-// 		expect.anything()
-// 	);
-// });
+	expect(natsWrapper.client.publish).toHaveBeenCalledTimes(1);
+	expect(natsWrapper.client.publish).toHaveBeenCalledWith(
+		'order:created',
+		expect.anything(),
+		expect.anything()
+	);
+});
