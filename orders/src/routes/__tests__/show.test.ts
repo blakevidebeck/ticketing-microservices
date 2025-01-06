@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 it('returns an order for a particular user ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
+		id: '1',
 		title: 'concert',
 		price: 20,
 	});
@@ -38,6 +39,7 @@ it('returns an error if no order found ', async () => {
 it('returns an error if user not authorized to get ticket ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
+		id: '1',
 		title: 'concert',
 		price: 20,
 	});

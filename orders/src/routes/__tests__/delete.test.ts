@@ -10,6 +10,7 @@ import { natsWrapper } from '../../nats-wrapper';
 it('cancels a order for a user ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
+		id: '1',
 		title: 'concert',
 		price: 20,
 	});
@@ -40,6 +41,7 @@ it('returns an error if no order found ', async () => {
 it('returns an error if user not authorized to delete ticket ', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
+		id: '1',
 		title: 'concert',
 		price: 20,
 	});
@@ -63,6 +65,7 @@ it('returns an error if user not authorized to delete ticket ', async () => {
 it('publishes a cancel order event', async () => {
 	// Create a ticket
 	const ticket = Ticket.build({
+		id: '1',
 		title: 'concert',
 		price: 20,
 	});
