@@ -1,6 +1,7 @@
 import { OrderStatus } from '@bvidebecktickets/common';
 import mongoose from 'mongoose';
-import { TicketDoc } from './Ticket';
+import { TicketDoc } from './ticket';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 export { OrderStatus };
 
@@ -18,7 +19,9 @@ interface OrderModel extends mongoose.Model<OrderDoc> {
 }
 
 // An interface that describes the properties that a order document has
-interface OrderDoc extends mongoose.Document, OrderAttrs {}
+interface OrderDoc extends mongoose.Document, OrderAttrs {
+	version: number;
+}
 
 const orderSchema = new mongoose.Schema(
 	{
@@ -48,8 +51,11 @@ const orderSchema = new mongoose.Schema(
 				delete ret._id;
 			},
 		},
+		versionKey: 'version',
 	}
 );
+
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => new Order(attrs);
 

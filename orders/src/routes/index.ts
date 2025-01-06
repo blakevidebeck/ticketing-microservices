@@ -1,6 +1,6 @@
 import { requireAuth } from '@bvidebecktickets/common';
 import express, { Request, Response } from 'express';
-import { Order } from '../models/Order';
+import { Order } from '../models/order';
 
 const router = express.Router();
 

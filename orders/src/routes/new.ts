@@ -7,8 +7,8 @@ import {
 } from '@bvidebecktickets/common';
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { Ticket } from '../models/Ticket';
-import { Order } from '../models/Order';
+import { Ticket } from '../models/ticket';
+import { Order } from '../models/order';
 import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher';
 import { natsWrapper } from '../nats-wrapper';
 
@@ -64,6 +64,7 @@ router.post(
 				userId: order.userId,
 				status: order.status,
 				expiresAt: order.expiresAt.toISOString(),
+				version: order.version,
 				ticket: {
 					id: ticket.id,
 					price: ticket.price,

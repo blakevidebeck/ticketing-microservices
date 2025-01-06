@@ -1,6 +1,6 @@
 import { Listener, Subjects, TicketCreatedEvent } from '@bvidebecktickets/common';
 import { Message } from 'node-nats-streaming';
-import { Ticket } from '../../models/Ticket';
+import { Ticket } from '../../models/ticket';
 import { QueueGroupNames } from './queue-group-name';
 
 export class TicketCreatedListener extends Listener<TicketCreatedEvent> {

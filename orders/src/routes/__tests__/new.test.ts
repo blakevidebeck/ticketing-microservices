@@ -1,9 +1,9 @@
 import request from 'supertest';
 import { app } from '../../app';
 
-import { Order, OrderStatus } from '../../models/Order';
+import { Order, OrderStatus } from '../../models/order';
 import mongoose from 'mongoose';
-import { Ticket } from '../../models/Ticket';
+import { Ticket } from '../../models/ticket';
 import { natsWrapper } from '../../nats-wrapper';
 
 it('has a route handler listening to /api/orders for post requests', async () => {

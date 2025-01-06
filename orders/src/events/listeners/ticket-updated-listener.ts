@@ -1,6 +1,6 @@
 import { Listener, NotFoundError, Subjects, TicketUpdatedEvent } from '@bvidebecktickets/common';
 import { Message } from 'node-nats-streaming';
-import { Ticket } from '../../models/Ticket';
+import { Ticket } from '../../models/ticket';
 import { QueueGroupNames } from './queue-group-name';
 
 export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {

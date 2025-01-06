@@ -27,6 +27,7 @@ router.post(
 				title: ticket.title,
 				price: ticket.price,
 				userId: ticket.userId,
+				version: ticket.version,
 			});
 		} catch (error) {
 			console.log('Ticket created error', error);

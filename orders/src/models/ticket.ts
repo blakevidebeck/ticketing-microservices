@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Order, OrderStatus } from './Order';
+import { Order, OrderStatus } from './order';
 
 // An interface that describes the properties that are required to create a new ticket
 interface TicketAttrs {

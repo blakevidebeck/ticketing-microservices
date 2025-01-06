@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { app } from '../../app';
 
-import { Ticket } from '../../models/Ticket';
+import { Ticket } from '../../models/ticket';
 import mongoose from 'mongoose';
 import { OrderStatus } from '@bvidebecktickets/common';
-import { Order } from '../../models/Order';
+import { Order } from '../../models/order';
 import { natsWrapper } from '../../nats-wrapper';
 
 it('cancels a order for a user ', async () => {
