@@ -1,0 +1,18 @@
+import { Listener, Subjects, TicketCreatedEvent } from '@bvidebecktickets/common';
+import { Message } from 'node-nats-streaming';
+import { Ticket } from '../../models/Ticket';
+import { QueueGroupNames } from './queue-group-name';
+
+export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
+	readonly subject = Subjects.TicketCreated;
+	readonly queueGroupName = QueueGroupNames.ORDERS_SERVICE;
+
+	onMessage = async (data: TicketCreatedEvent['data'], message: Message) => {
+		const { id, title, price } = data;
+
+		const ticket = Ticket.build({ id, title, price });
+		await ticket.save();
+
+		message.ack();
+	};
+}
