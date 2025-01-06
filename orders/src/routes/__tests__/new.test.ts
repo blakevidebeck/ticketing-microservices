@@ -44,8 +44,10 @@ it('returns an error if the ticket does not exist', async () => {
 });
 
 it('returns an error if the ticket is already reserved', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -67,8 +69,10 @@ it('returns an error if the ticket is already reserved', async () => {
 });
 
 it('creates an order if existing order status was cancelled', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -90,8 +94,10 @@ it('creates an order if existing order status was cancelled', async () => {
 });
 
 it('creates an order if no existing order', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -105,8 +111,10 @@ it('creates an order if no existing order', async () => {
 });
 
 it('publishes a create order event', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});

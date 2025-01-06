@@ -8,9 +8,10 @@ import { Order } from '../../models/order';
 import { natsWrapper } from '../../nats-wrapper';
 
 it('cancels a order for a user ', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
 	// Create a ticket
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -39,9 +40,11 @@ it('returns an error if no order found ', async () => {
 });
 
 it('returns an error if user not authorized to delete ticket ', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	// Create a ticket
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -63,9 +66,11 @@ it('returns an error if user not authorized to delete ticket ', async () => {
 });
 
 it('publishes a cancel order event', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	// Create a ticket
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});

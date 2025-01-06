@@ -5,9 +5,11 @@ import { Ticket } from '../../models/ticket';
 import mongoose from 'mongoose';
 
 it('returns an order for a particular user ', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	// Create a ticket
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
@@ -37,9 +39,11 @@ it('returns an error if no order found ', async () => {
 });
 
 it('returns an error if user not authorized to get ticket ', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
 	// Create a ticket
 	const ticket = Ticket.build({
-		id: '1',
+		id,
 		title: 'concert',
 		price: 20,
 	});
