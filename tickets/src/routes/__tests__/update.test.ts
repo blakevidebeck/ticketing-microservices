@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import mongoose from 'mongoose';
 import { natsWrapper } from '../../nats-wrapper';
+import { Ticket } from '../../models/ticket';
 
 it('returns a 404 if the provided id does not exist', async () => {
 	const id = new mongoose.Types.ObjectId().toHexString();
@@ -50,6 +51,28 @@ it('returns a 400 if the user provides an invalid title or price', async () => {
 		.put(`/api/tickets/${res.body.id}`)
 		.set('Cookie', cookie)
 		.send({ title: '', price: 10 })
+		.expect(400);
+});
+
+it('returns a 400 if the ticket is reserved', async () => {
+	const id = new mongoose.Types.ObjectId().toHexString();
+
+	const cookie = global.signin();
+
+	const res = await request(app)
+		.post('/api/tickets')
+		.set('Cookie', cookie)
+		.send({ title: 'Ticket', price: 10 })
+		.expect(201);
+
+	const ticket = await Ticket.findById(res.body.id);
+	ticket!.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+	await ticket!.save();
+
+	await request(app)
+		.put(`/api/tickets/${res.body.id}`)
+		.set('Cookie', cookie)
+		.send({ title: 'Ticket', price: 20 })
 		.expect(400);
 });
 
