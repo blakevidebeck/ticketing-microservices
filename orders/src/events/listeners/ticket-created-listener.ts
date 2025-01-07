@@ -10,6 +10,7 @@ export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
 	onMessage = async (data: TicketCreatedEvent['data'], message: Message) => {
 		const { id, title, price } = data;
 
+		// Don't need the version here as it should always be 0
 		const ticket = Ticket.build({ id, title, price });
 		await ticket.save();
 

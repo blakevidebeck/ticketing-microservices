@@ -8,14 +8,15 @@ export class TicketUpdatedListener extends Listener<TicketUpdatedEvent> {
 	readonly queueGroupName = QueueGroupNames.ORDERS_SERVICE;
 
 	onMessage = async (data: TicketUpdatedEvent['data'], message: Message) => {
-		const { id, title, price, version } = data;
+		const { title, price } = data;
 
-		const ticket = await Ticket.findOne({ _id: id, version: version - 1 });
+		const ticket = await Ticket.findByEvent(data);
 
 		if (!ticket) {
 			throw new NotFoundError();
 		}
 
+		// If a ticket was found, we can update it and then save it which in turn will cause the version to be updated as it updates on every save
 		ticket.set({ title, price });
 		await ticket.save();
 

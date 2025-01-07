@@ -9,9 +9,12 @@ interface TicketAttrs {
 	price: number;
 }
 
+type TicketEvent = Pick<TicketDoc, 'id' | 'version'>;
+
 // An interface that describes the properties that a ticket model has
 interface TicketModel extends mongoose.Model<TicketDoc> {
 	build: (attrs: TicketAttrs) => TicketDoc;
+	findByEvent: (event: Pick<TicketDoc, 'id' | 'version'>) => Promise<TicketDoc | null>;
 }
 
 // An interface that describes the properties that a ticket document has
@@ -51,9 +54,20 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
 		...attrs,
 	});
 };
+
+/**
+ * Find the last ticket with the last version. If the events were processed out of order then this will fail and it should put the event back in the queue
+ */
+ticketSchema.statics.findByEvent = (event: TicketEvent) => {
+	const { id, version } = event;
+	return Ticket.findOne({ _id: id, version: version - 1 });
+};
+
+/**
+ * Run query to look at all orders. Find an order where the ticket is the ticket we just found and the orders status is not cancelled.
+ *  If we find an order from this that means the ticket is reserved
+ */
 ticketSchema.methods.isReserved = async function () {
-	// Run query to look at all orders. Find an order where the ticket is the ticket we just found and the orders status is not cancelled.
-	// If we find an order from this that means the ticket is reserved
 	const existingOrder = await Order.findOne({
 		ticket: this,
 		status: {
