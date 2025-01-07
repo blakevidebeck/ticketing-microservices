@@ -16,6 +16,7 @@ interface TicketModel extends mongoose.Model<TicketDoc> {
 // An interface that describes the properties that a ticket document has
 interface TicketDoc extends mongoose.Document, TicketAttrs {
 	version: number;
+	orderId?: string;
 }
 
 const ticketSchema = new mongoose.Schema(
@@ -31,6 +32,9 @@ const ticketSchema = new mongoose.Schema(
 		userId: {
 			type: String,
 			required: true,
+		},
+		orderId: {
+			type: String,
 		},
 	},
 	{
