@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An interface that describes the properties that are required to create a new ticket
 interface TicketAttrs {
@@ -44,7 +43,14 @@ const ticketSchema = new mongoose.Schema(
 	}
 );
 
-ticketSchema.plugin(updateIfCurrentPlugin);
+// increment the document version when the record is saved (optimistic concurrency control)
+ticketSchema.pre('save', function (done) {
+	this.$where = {
+		version: this.get('version') - 1,
+	};
+
+	done();
+});
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => new Ticket(attrs);
 
