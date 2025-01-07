@@ -1,6 +1,7 @@
 import { OrderStatus } from '@bvidebecktickets/common';
 import mongoose from 'mongoose';
 import { TicketDoc } from './ticket';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 export { OrderStatus };
 
@@ -54,14 +55,7 @@ const orderSchema = new mongoose.Schema(
 	}
 );
 
-// increment the document version when the record is saved (optimistic concurrency control)
-orderSchema.pre('save', function (done) {
-	this.$where = {
-		version: this.get('version') - 1,
-	};
-
-	done();
-});
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => new Order(attrs);
 
