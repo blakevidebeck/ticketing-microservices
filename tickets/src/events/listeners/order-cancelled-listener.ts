@@ -1,10 +1,4 @@
-import {
-	Listener,
-	NotFoundError,
-	OrderCancelledEvent,
-	OrderCreatedEvent,
-	Subjects,
-} from '@bvidebecktickets/common';
+import { Listener, NotFoundError, OrderCancelledEvent, Subjects } from '@bvidebecktickets/common';
 import { Message } from 'node-nats-streaming';
 import { Ticket } from '../../models/ticket';
 import { TicketUpdatedPublisher } from '../publishers/ticket-updated-publisher';
