@@ -17,7 +17,7 @@ spec:
           image: blakevidebeck/expiration
           env:
             - name: NATS_CLUSTER_ID
-              value: "ticketing"
+              value: ticketing
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
