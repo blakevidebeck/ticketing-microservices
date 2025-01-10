@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
+import { stripe } from '../../stripe';
+
+jest.mock('../../stripe');
 
 it('has a route handler listening to /api/payments for post requests', async () => {
 	const res = await request(app).post('/api/payments').send({});
@@ -48,7 +51,7 @@ it('throws a 401 if no order does not belong to user', async () => {
 		version: 0,
 		price: 10,
 	});
-	order.save();
+	await order.save();
 
 	await request(app)
 		.post('/api/payments')
@@ -67,7 +70,7 @@ it('returns a 400 when purchasing a cancelled order', async () => {
 		version: 0,
 		price: 10,
 	});
-	order.save();
+	await order.save();
 
 	await request(app)
 		.post('/api/payments')
@@ -75,3 +78,56 @@ it('returns a 400 when purchasing a cancelled order', async () => {
 		.send({ orderId: order.id, token: '123' })
 		.expect(400);
 });
+
+it('returns a 200 when successfully purchasing a order', async () => {
+	const userId = new mongoose.Types.ObjectId().toHexString();
+
+	const order = Order.build({
+		id: new mongoose.Types.ObjectId().toHexString(),
+		userId,
+		status: OrderStatus.AwaitingPayment,
+		version: 0,
+		price: 10,
+	});
+	await order.save();
+
+	await request(app)
+		.post('/api/payments')
+		.set('Cookie', global.signin(userId))
+		.send({ orderId: order.id, token: 'tok_visa' })
+		.expect(201);
+
+	const chargeOptions = (stripe.charges.create as jest.Mock).mock.calls[0][0];
+
+	expect(chargeOptions.source).toEqual('tok_visa');
+	expect(chargeOptions.amount).toEqual(10 * 100);
+	expect(chargeOptions.currency).toEqual('usd');
+});
+
+// ! Commented out cause it hits stripe directly
+// it('returns a 201 when successfully purchasing a order', async () => {
+// 	const price = Math.floor(Math.random() * 100000);
+// 	const userId = new mongoose.Types.ObjectId().toHexString();
+
+// 	const order = Order.build({
+// 		id: new mongoose.Types.ObjectId().toHexString(),
+// 		userId,
+// 		status: OrderStatus.AwaitingPayment,
+// 		version: 0,
+// 		price,
+// 	});
+// await order.save();
+
+// 	await request(app)
+// 		.post('/api/payments')
+// 		.set('Cookie', global.signin(userId))
+// 		.send({ orderId: order.id, token: 'tok_visa' })
+// 		.expect(200);
+
+// 	const stripeCharges = await stripe.charges.list({ limit: 50 });
+
+// 	const stripeCharge = stripeCharges.data.find(charge => charge.amount === price * 100);
+
+// 	expect(stripeCharge).toBeDefined();
+// 	expect(stripeCharge?.currency).toEqual('usd');
+// });
