@@ -3,6 +3,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
 import { stripe } from '../../stripe';
+import { Payment } from '../../models/payments';
 
 jest.mock('../../stripe');
 
@@ -102,6 +103,13 @@ it('returns a 200 when successfully purchasing a order', async () => {
 	expect(chargeOptions.source).toEqual('tok_visa');
 	expect(chargeOptions.amount).toEqual(10 * 100);
 	expect(chargeOptions.currency).toEqual('usd');
+
+	const payment = await Payment.findOne({
+		orderId: order.id,
+		stripeId: '123',
+	});
+
+	expect(payment).not.toBeNull();
 });
 
 // ! Commented out cause it hits stripe directly

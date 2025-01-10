@@ -10,6 +10,7 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { Order } from '../models/order';
 import { stripe } from '../stripe';
+import { Payment } from '../models/payments';
 
 const router = express.Router();
 
@@ -35,12 +36,18 @@ router.post(
 			throw new BadRequestError('Cannot pay for a cancelled order');
 		}
 
-		await stripe.charges.create({
+		const stripeCharge = await stripe.charges.create({
 			amount: order.price * 100,
 			currency: 'usd',
 			source: token,
 			description: 'Microservices fake payment',
 		});
+
+		const payment = Payment.build({
+			orderId,
+			stripeId: stripeCharge.id,
+		});
+		await payment.save();
 
 		res.status(201).send({ success: true });
 	}
